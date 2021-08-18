@@ -58,7 +58,7 @@ module.exports = app => {
             .catch(err => res.status(500).send(err))
     }
 
-    //APRENDA A IDENTAÇÃO PELO AMOR DE DEUS 
+
 
     return { save, get, getById }
 }

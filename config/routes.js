@@ -1,11 +1,22 @@
-//const user = require('../api/user')
+//const admin = require('./admin')
 
 module.exports = app => {
-app.post('/signup', app.api.user.save)
-app.post('/signin', app.api.auth.signin)
-app.post('/validateToken', app.api.validateToken)
+    app.post('/signup', app.api.user.save)
+    app.post('/signin', app.api.auth.signin)
+    app.post('/validateToken', app.api.auth.validateToken)
 
-app.route('/users').post(app.api.user.save).get(app.api.user.get)
-app.route('./users/:id').put(app.api.user.save).get(app.api.user.getById)
-    //VOLTO EM 10 MINUTOS ME CHAMARAM AQUI PRA UMA REUNIÃO RAPIDA
+    app.route('/users')
+        //.all(app.config.passport.authenticate())
+        .post(app.api.user.save)
+        .get(app.api.user.get)
+
+    app.route('/users/:id')
+        //.all(app.config.passport.authenticate())
+        //.put(admin(app.api.user.save))
+        .get(app.api.user.getById)
+       // .delete(admin(app.api.user.remove))
+    
+    //app.route('/stats')
+      //  .all(app.config.passport.authenticate())
+        //.get(app.api.stat.get)
 }

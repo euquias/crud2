@@ -1,6 +1,7 @@
 const { authSecret } = require('../.env')
-const jwt = require('jwt-simple')
 const bcrypt = require('bcrypt')
+const jwt = require('jwt-simple')
+
 
 module.exports = app => {
     const signin = async (req, res) => {
@@ -16,6 +17,8 @@ module.exports = app => {
 
         const isMatch = bcrypt.compareSync(req.body.password, user.password)
         if (!isMatch) return res.status(401).send('Email/Senha inválidos!')
+        
+        // parte do tokem
 
         const now = Math.floor(Date.now() / 1000)
 
