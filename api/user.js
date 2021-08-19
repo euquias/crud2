@@ -13,7 +13,7 @@ module.exports = app => {
         if (req.params.id) user.id = req.params.id
 
         try {
-            existsOrError(user.name, 'nome não informado')
+            existsOrError(user.name, 'name não informado')
             existsOrError(user.email, 'E-mail não informado')
             existsOrError(user.password, 'senha não informada')
             existsOrError(user.confirmPassword, 'confirmação de senha invalida')
@@ -33,6 +33,7 @@ module.exports = app => {
             app.db('users')
                 .update(user)
                 .where({ id: user.id })
+                .whereNull('deleteAt')
                 .then(_ => res.status(204).send())
                 .catch(err => res.status(500).send(err))
         } else {
@@ -44,21 +45,38 @@ module.exports = app => {
     }
     const get = (req, res) => {
         app.db('users')
-            .select('id', 'nome', 'email', 'admin')
+            .select('id', 'name', 'email', 'admin')
+            .whereNull('deleteAt')
             .then(users => res.json(users))
             .catch(err => res.status(500).send(err))
     }
 
     const getById = (req, res) => {
         app.db('users')
-            .select('id', 'nome', 'email', 'admin')
+            .select('id', 'name', 'email', 'admin')
+            .whereNull('deleteAt')
             .where({ id: req.params.id })
             .first()
             .then(user => res.json(user))
             .catch(err => res.status(500).send(err))
     }
 
+    const remove = async (req, res) => {
+        try{
+        const articles = await app.db('articles')
+            .where({ userId: req.params.id })
+        notExistsOrError(articles, 'usuario possui dados')
+        const rowsUpdated = await app.db('users')
+            .update({ deletedAt: Date() })
+            .where({ id: req.params.id })
+        existsOrError(rowsUpdated, 'usuario não foi encontrado')
 
+        res.status(204).send()
 
-    return { save, get, getById }
+    } catch (msg) {
+        res.status(400).send(msg)
+    }
+}
+
+return { save, get, getById, remove }
 }
